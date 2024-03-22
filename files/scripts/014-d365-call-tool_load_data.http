@@ -1,0 +1,9 @@
+@auth_token = Bearer {{$dotenv D365_TOKEN}}
+@host = {{$dotenv D365_HOST}}
+
+@TOOL_REPONSE_METHOD = GET
+@TOOL_REPONSE_PATH = api/data/v9.2/accounts?$select=accountid&$filter=contains(name,'Hollywood Hills')&$top=1
+
+### Tool call 2. Step, get count of opportunities with statecode eq 0
+{{TOOL_REPONSE_METHOD}} https://{{host}}/{{TOOL_REPONSE_PATH}}
+Authorization: {{auth_token}}

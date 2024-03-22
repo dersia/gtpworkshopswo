@@ -1,0 +1,53 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "make_odata_call_to_dataverse",
+            "description": "Make a call to the Dataverse using OData",
+            "parameters": {
+                "type": "object",
+                    "properties": {
+                    "odataQueryUrl": {
+                        "type": "string",
+                        "description": "The OData Query url. Use <DATAVERSE_HOST> as hostname, this will be replaced by the actual hostname when called"
+                    },
+                    "odataHttpMethod": {
+                        "type": "string",
+                        "description": "The Http-Method used for when calling the odataQueryUrl"
+                    },
+                    "odataBody": {
+                        "type": "string",
+                        "description": "The Body that will be send when calling the odataQueryUrl. This is optional"
+                    },
+                    "odataBodyContentType": {
+                        "type": "string",
+                        "description": "The ContentType of the Body when calling the odataQueryUrl. This is required, if a body is provided"
+                    }
+                },
+                "required": [
+                "odataQueryUrl",
+                "odataHttpMethod"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_schema_information",
+            "description": "Get Schema information about the Dataverse Entities",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "entityName": {
+                        "type": "string",
+                        "description": "The name of the entity for which the schema information is requested"
+                    }
+                },
+                "required": [
+                    "entityName"
+                ]
+            }
+        }
+    }
+]

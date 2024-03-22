@@ -1,0 +1,81 @@
+@endpoint = {{$dotenv OAI_ENDPOINT}}
+@apiKey = {{$dotenv OAI_API_KEY}}
+@deploymentName = {{$dotenv OAI_DEPLOYMENT}}
+@systemMessage = "You are an Assistant who helps users to gather information from a Company database.\nThe Database is a Microsoft Dataverse database. You can use the provided functions to issue commands against the dataverse to gather information that you need to reach the given goal or answer the user request.\nDo not assume any table or enitity schemata and do not assume that the requested entity exists, use the available functions to get the information you need first before you try to retrieve data from the dataverse.\nIf you just need the count for an odata query also set the $top parameter to 1 and the $select parameter just to the id of the entity.\n\nDo not make anything up, if you don't know anything let the user know that you are missing information. If you need more information ask of it. "
+
+### Initial Request, sum of all business volumes for all open opportunities for customer Hollywood Hills
+POST https://{{endpoint}}.openai.azure.com/openai/deployments/{{deploymentName}}/chat/completions?api-version=2024-02-15-preview
+Content-Type: application/json
+api-key: {{apiKey}}
+
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an Assistant who helps users to gather information from a Company database.\nThe Database is a Microsoft Dataverse database. You can use the provided functions to issue commands against the dataverse to gather information that you need to reach the given goal or answer the user request.\nDo not assume any table or enitity schemata and do not assume that the requested entity exists, use the available functions to get the information you need first before you try to retrieve data from the dataverse.\nIf you just need the count for an odata query also set the $top parameter to 1 and the $select parameter just to the id of the entity.\n\nDo not make anything up, if you don't know anything let the user know that you are missing information. If you need more information ask of it. "
+    },
+    {
+        "role": "user",
+        "content": "Gib mir die Summe aller Businessvolume aller offenen Opportunities für den Kunden Hollywood Hills"
+    }
+  ],
+  "tools":[
+    {
+        "type": "function",
+        "function": {
+            "name": "make_odata_call_to_dataverse",
+            "description": "Make a call to the Dataverse using OData",
+            "parameters": {
+                "type": "object",
+                    "properties": {
+                    "odataQueryUrl": {
+                        "type": "string",
+                        "description": "The OData Query url. Use <DATAVERSE_HOST> as hostname, this will be replaced by the actual hostname when called"
+                    },
+                    "odataHttpMethod": {
+                        "type": "string",
+                        "description": "The Http-Method used for when calling the odataQueryUrl"
+                    },
+                    "odataBody": {
+                        "type": "string",
+                        "description": "The Body that will be send when calling the odataQueryUrl. This is optional"
+                    },
+                    "odataBodyContentType": {
+                        "type": "string",
+                        "description": "The ContentType of the Body when calling the odataQueryUrl. This is required, if a body is provided"
+                    }
+                },
+                "required": [
+                "odataQueryUrl",
+                "odataHttpMethod"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_schema_information",
+            "description": "Get Schema information about the Dataverse Entities",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "entityName": {
+                        "type": "string",
+                        "description": "The name of the entity for which the schema information is requested"
+                    }
+                },
+                "required": [
+                    "entityName"
+                ]
+            }
+        }
+    }
+  ],
+  "temperature": 0.7,
+  "top_p": 0.95,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "max_tokens": 1200,
+  "stop": null
+}
